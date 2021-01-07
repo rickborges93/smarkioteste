@@ -39,6 +39,19 @@ module.exports = {
     },
 
     listen: (req, res) => {
-        res.json({listen: true});
+        let json = { error: '', result:[] };
+        let texto = req.query.texto;
+
+        if (texto) {
+            let audio = ComentarioService.listen(texto);
+
+            json.result = {
+                success: true
+            }
+
+        } else {
+            json.error = 'Campos não enviados';
+        }
+        res.json(json);
     },
 };

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <title>.:: SMARKIO | COMENTARIOS ::.</title>
+  </head>
+  <body style="background-color: #eee;">
+  
+	<div class="container">
+		<div class="row" style="margin-top: 50px;">
+			<div class="col-md-6">
+				<h2>Comentário</h2>
+				<form id="formularioCadastroComentario">
+					<div class="form-group">
+						<textarea class="form-control" id="comentarioCadastro" rows="6" required></textarea>
+					</div>
+					<div class="form-group" style="margin-top: 15px;">
+						<button type="submit" class="btn btn-primary w-100" onclick="cadastrarComentario()">Cadastrar</button>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-6">
+				<h2>Comentários</h2>
+				<div id="comentarios"></div>			
+			</div>
+		</div>
+		<audio controls="controls" hidden>
+			<source id="ouvirAudio" src="../comentario/comentario.wav" type="audio/wav" />
+			seu navegador não suporta HTML5
+		</audio>
+	</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script>
+		const base_url = 'http://localhost:3000/api';
+		
+		$(document).ready(function() {
+			listarTodosComentarios();
+		});
+		
+		function limparTela() {
+			$("#comentarios").empty();
+		}
+		
+		function listarTodosComentarios () {
+			
+			$.get(base_url+'/comentarios', function(resultado){
+				renderComentarios(resultado.result);	
+			})			
+		}
+		
+		function renderComentarios(comentarios) {
+			let dados = '';
+			
+			for(let i in comentarios) {
+				dados += '<div class="card" style="margin-bottom: 15px;">';
+				dados += '	<div class="card-body row">';
+				dados += '		<div class="col-10">';
+				dados += '			<p class="card-text" id="comentario'+comentarios[i].id+'">'+comentarios[i].comentario+'</p>';
+				dados += '		</div>';
+				dados += '		<div class="col-2 d-flex flex-column justify-content-center align-items-center">';
+				dados += '			<a onclick="ouvirComentario('+comentarios[i].id+')" class="btn btn-primary align-middle">Ouvir</a>';
+				dados += '		</div>';
+				dados += '	</div>';
+				dados += '</div>';
+			}
+			$("#comentarios").append(dados);
+			
+		}
+		
+		function cadastrarComentario() {
+			let comentarioCadastro = ($("#comentarioCadastro").val()).trim();
+			if(comentarioCadastro) {
+				$.post(base_url+'/comentario', { texto: comentarioCadastro }, function(resultado){
+				console.log('entrou aqui');
+				console.log(resultado);
+					if (resultado.error) {
+						alert('Erro ao cadastrar comentário');
+					} else {
+						limparTela();
+						listarTodosComentarios();					
+					}
+				});	
+			}
+			$("#comentarioCadastro").val('');
+		}
+		
+		function ouvirComentario(id) {
+			let nomeDiv = "#comentario"+id;
+			let texto = $(nomeDiv).text();
+
+			$.get(base_url+'/comentario', { texto: texto }, function(resultado){
+				console.log(resultado);
+				if (resultado.result.success == true) {
+					setTimeout(function() {
+						document.getElementsByTagName("audio")[0].play();
+					}, 5000);
+				}
+			});
+		}
+	</script>
+  </body>
+</html>
