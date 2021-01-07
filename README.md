@@ -21,7 +21,7 @@ git clone https://github.com/rickborges93/smarkioteste.git
 ```
 npm install
 ```
-3. Crie um banco de dados.
+3. Crie um banco de dados e insira a tabela abaixo.
 
 ``` 
 CREATE TABLE IF NOT EXISTS `comentarios` (
@@ -55,4 +55,8 @@ IBM_URL=
 ```
 npm start
 ```
+
+6. Acesse a pasta "public" e abra o arquivo "index.html".
+
+7. Usufrua da aplicação.
 
