@@ -5,12 +5,39 @@ module.exports = {
         res.json({server: true});
     },
 
-    all: (req, res) => {
-        res.json({all: true});
+    all: async (req, res) => {
+        let json = { error: '', result:[] };
+        let comentarios = await ComentarioService.getAll();
+
+        for(let i in comentarios) {
+            json.result.push({
+                id: comentarios[i].id,
+                comentario: comentarios[i].texto
+            });
+        }
+
+        res.json(json);
     },
-    new: (req, res) => {
-        res.json({new: true});
+
+    new: async (req, res) => {
+        let json = { error: '', result:[] };
+        let texto = req.body.texto;
+
+        if (texto) {
+            let comentarioId = await ComentarioService.add(texto);
+
+            json.result = {
+                id: comentarioId,
+                comentario: texto
+            };
+
+        } else {
+            json.error = 'Campos não enviados';
+        }
+
+        res.json(json);
     },
+
     listen: (req, res) => {
         res.json({listen: true});
     },
