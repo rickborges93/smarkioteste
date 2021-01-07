@@ -4,14 +4,6 @@ const fs = require('fs').promises;
 const TextToSpeechV1 = require('ibm-watson/text-to-speech/v1');
 const { IamAuthenticator } = require('ibm-watson/auth');
 
-const textToSpeech = new TextToSpeechV1({
-    authenticator: new IamAuthenticator({
-        apikey: `${process.env.IBM_KEY}`,
-    }),
-    serviceUrl: `${process.env.IBM_URL}`,
-    disableSslVerification: true,
-});
-
 module.exports = {
 
     getAll: () => {
@@ -42,7 +34,15 @@ module.exports = {
         });
     },
 
-    listen: (texto) => {
+    listen: async (texto) => {
+
+        const textToSpeech = new TextToSpeechV1({
+            authenticator: new IamAuthenticator({
+                apikey: `${process.env.IBM_KEY}`,
+            }),
+            serviceUrl: `${process.env.IBM_URL}`,
+            disableSslVerification: true,
+        });
 
         let AudioPatch = 'comentario/comentario.wav';
 
@@ -57,7 +57,7 @@ module.exports = {
             voice: 'pt-BR_IsabelaV3Voice',
         };
 
-        textToSpeech.synthesize(synthesizeParams)
+        await textToSpeech.synthesize(synthesizeParams)
         .then(response => {
             return textToSpeech.repairWavHeaderStream(response.result);
         })
@@ -67,5 +67,10 @@ module.exports = {
         .catch(err => {
             console.log('error:', err);
         });
+
+        return {
+            fileName: fileName + date + '.wav',
+            fileDir: __dirname + '/public/audio/' + fileName + date + '.wav'
+        }
     }
 };
