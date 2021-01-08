@@ -12,6 +12,8 @@ Teste prático para desenvolvedor NodeJS consumindo a API IBM Watson TextToSpeec
 - [Wav](https://www.npmjs.com/package/wav)
 - [Speaker](https://www.npmjs.com/package/speaker)
 
+## Como Utilizar
+
 1. Clone o repositório.
 
 ```
