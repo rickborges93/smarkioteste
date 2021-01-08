@@ -1,9 +1,5 @@
 const db = require('../db');
 
-const fs = require('fs').promises;
-const TextToSpeechV1 = require('ibm-watson/text-to-speech/v1');
-const { IamAuthenticator } = require('ibm-watson/auth');
-
 module.exports = {
 
     getAll: () => {
@@ -36,6 +32,12 @@ module.exports = {
 
     listen: async (texto) => {
 
+        const fs = require('fs').promises;
+        const wav = require('wav');
+        const Speaker = require('speaker');
+        const TextToSpeechV1 = require('ibm-watson/text-to-speech/v1');
+        const { IamAuthenticator } = require('ibm-watson/auth');
+
         const textToSpeech = new TextToSpeechV1({
             authenticator: new IamAuthenticator({
                 apikey: `${process.env.IBM_KEY}`,
@@ -44,11 +46,9 @@ module.exports = {
             disableSslVerification: true,
         });
 
-        let AudioPatch = 'comentario/comentario.wav';
-
-        fs.unlink(AudioPatch, (err) => {
-            if (err) throw err;
-            console.log('Arquivo deletado!');
+        const reader = new wav.Reader();
+        reader.on('format', function (format) {
+            reader.pipe(new Speaker(format));
         });
 
         let synthesizeParams = {
@@ -59,18 +59,10 @@ module.exports = {
 
         await textToSpeech.synthesize(synthesizeParams)
         .then(response => {
-            return textToSpeech.repairWavHeaderStream(response.result);
-        })
-        .then(async buffer => {
-            await fs.writeFile(AudioPatch, buffer);
+            response.result.pipe(reader);
         })
         .catch(err => {
             console.log('error:', err);
         });
-
-        return {
-            fileName: fileName + date + '.wav',
-            fileDir: __dirname + '/public/audio/' + fileName + date + '.wav'
-        }
     }
 };

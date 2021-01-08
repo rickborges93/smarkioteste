@@ -9,6 +9,8 @@ Teste prático para desenvolvedor NodeJS consumindo a API IBM Watson TextToSpeec
 - [Mysql](https://www.npmjs.com/package/mysql)
 - [Watson](https://www.npmjs.com/package/ibm-watson)
 - [Fs](https://www.npmjs.com/package/fs)
+- [Wav](https://www.npmjs.com/package/wav)
+- [Speaker](https://www.npmjs.com/package/speaker)
 
 1. Clone o repositório.
 
